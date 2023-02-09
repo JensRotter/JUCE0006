@@ -21,7 +21,7 @@ namespace jero
 		/// Transport Info
 		/// </summary>
 		struct Transport
-		{
+		{ 
 			int trBar{ 0 };
 			int trQuarter{ 0 };
 			int trEighth{ 0 };
