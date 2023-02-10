@@ -30,6 +30,7 @@ namespace jero
 			int trSixtyfourth{ 1 };
 		};
 
+
 		struct SamplesPerDivision
 		{
 			long wholeNote{ 0 };
@@ -48,12 +49,11 @@ namespace jero
 		};
 	}
 
-
 	namespace midi
 	{
 		class MidiTool
 		{
-			struct MidiNote
+			typedef struct MidiNote
 			{
 			public:
 				int noteNumber;
@@ -66,9 +66,10 @@ namespace jero
 				{
 
 				}*/
-			};
+			} MidiNote;
 
 			tool::Transport midiTransport;
+			tool::SamplesPerDivision midiSamples;
 			void setSampleRate(double rate);
 			void setBpm(double bpm);
 			void Play();
@@ -85,6 +86,9 @@ namespace jero
 			tool::SamplesPerDivision midiNoteValues;
 			tool::PlayState midiPlayState = tool::PlayState::Stopped;
 
+			//std::vector <std::unique_ptr<MidiNote>> midiNotes;
+			std::vector<std::unique_ptr<MidiNote>> midiNotes;
+			
 			void calculateNoteValues();
 		};
 
