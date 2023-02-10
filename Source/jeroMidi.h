@@ -70,6 +70,9 @@ namespace jero
 
 			tool::Transport midiTransport;
 			tool::SamplesPerDivision midiSamples;
+
+			MidiTool();
+			~MidiTool();
 			void setSampleRate(double rate);
 			void setBpm(double bpm);
 			void Play();
@@ -82,12 +85,13 @@ namespace jero
 			double sampleRate{ 44100 };
 			double samplesPerBar{ 88200 };
 			long samplesPassed = 0;
+			bool noteOn = false;
 			
 			tool::SamplesPerDivision midiNoteValues;
 			tool::PlayState midiPlayState = tool::PlayState::Stopped;
 
 			//std::vector <std::unique_ptr<MidiNote>> midiNotes;
-			std::vector<std::unique_ptr<MidiNote>> midiNotes;
+			std::vector<MidiNote> midiNotes;
 			
 			void calculateNoteValues();
 		};

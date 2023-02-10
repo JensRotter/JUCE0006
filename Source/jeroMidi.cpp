@@ -56,7 +56,7 @@ namespace jero
 		/// </summary>
 		void MidiTool::calculateNoteValues()
 		{
-			midiSamples.wholeNote = round((long double(60 * sampleRate / midiBpm * 4));
+			midiSamples.wholeNote = round((long double(60 * sampleRate / midiBpm * 4)));
 			midiSamples.halfNote = round(midiSamples.wholeNote / 2);
 			midiSamples.quarterNote = round(midiSamples.wholeNote / 4);
 			midiSamples.eighthNote = round(midiSamples.wholeNote / 8);
@@ -162,64 +162,70 @@ namespace jero
 					/// <param name="samples"></param>
 					for (int l = 0; l < midiNotes.size(); l++)
 					{
-
-						midiNotes.size();
-						
-
-						if ((samplesPassed + i) == (midiNotes.operator[](l).get()->rbStartSample))
+						if ((samplesPassed + i) == (midiNotes.at(l).startSample))
 						{
-							auto message = juce::MidiMessage::noteOn(1, rbNotes.operator[](l).get()->rbNoteNumber, rbNotes.operator[](l).get()->rbNoteVelocity);
+							auto message = juce::MidiMessage::noteOn(1, midiNotes.at(l).noteNumber, midiNotes.at(l).noteVelocity);
 							myBuffer.addEvent(message, i);
 						}
 
-						if ((rbSamplesPassed + i) == (rbNotes.operator[](l).get()->rbEndSample))
+						if ((samplesPassed + i) == (midiNotes.at(i).endSample))
 						{
-							auto message = juce::MidiMessage::noteOff(1, rbNotes.operator[](l).get()->rbNoteNumber, rbNotes.operator[](l).get()->rbNoteVelocity);
+							auto message = juce::MidiMessage::noteOff(1, midiNotes.at(l).noteNumber, midiNotes.at(l).noteVelocity);
 							myBuffer.addEvent(message, i);
 						}
 					}
 				}
 
 				midiMessages.swapWith(myBuffer);
-				rbSamplesPassed += numSamples;
+				samplesPassed += numSamples;
 
-				for (int m = 0; m < rbNotes.size(); m++)
+				for (int m = 0; m < midiNotes.size(); m++)
 				{
-					if ((rbSamplesPassed) > (rbNotes.operator[](m).get()->rbEndSample))
+					if ((samplesPassed) > (midiNotes.at(m).endSample))
 					{
-						rbNotes.remove(rbNotes.operator[](m).get());
+						midiNotes.erase(midiNotes.begin()+m);
+
+						///mabye this is safer???
+						/*template <typename T>
+						void remove(std::vector<T>&vec, size_t pos)
+						{
+							std::vector<T>::iterator it = vec.begin();
+							std::advance(it, pos);
+							vec.erase(it);
+						}*/
 					}
 				}
 			}
 
-			if (rbPlayState == (RbPlayState::Stopped))
+			if (midiPlayState == (tool::PlayState::Stopped))
 			{
-				auto message = MidiMessage::allNotesOff(1);
+				auto message = juce::MidiMessage::allNotesOff(1);
 				midiMessages.addEvent(message, numSamples - 1);
 			}
 		}
-		void ReBeater::reSet()
+
+		void MidiTool::reSet()
 		{
-			rbTransport.rbBar = 0;
-			rbTransport.rbQuarter = 0;
-			rbTransport.rbEighth = 0;
-			rbTransport.rbSixteenth = 0;
-			rbTransport.rbThirtySecondth = 0;
-			rbTransport.rbSixtyfourth = 0;
-			rbSamplesPassed = 0;
-			rbPlayState = RbPlayState::Stopped;
+			midiTransport.trBar = 0;
+			midiTransport.trQuarter = 0;
+			midiTransport.trEighth = 0;
+			midiTransport.trSixteenth = 0;
+			midiTransport.trThirtySecondth = 0;
+			midiTransport.trSixtyfourth = 0;
+			samplesPassed = 0;
+			midiPlayState = tool::PlayState::Stopped;
 			noteOn = false;
-			rbNotes.deleteAll();
+			midiNotes.clear();
 		}
 
-		void ReBeater::Play()
+		void MidiTool::Play()
 		{
-			rbPlayState = RbPlayState::Playing;
+			midiPlayState = tool::PlayState::Playing;
 		}
 
-		void ReBeater::Stop()
+		void MidiTool::Stop()
 		{
-			rbPlayState = RbPlayState::Stopped;
+			midiPlayState = tool::PlayState::Stopped;
 			reSet();
 		}
 
