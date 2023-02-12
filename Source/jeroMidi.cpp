@@ -19,7 +19,20 @@ namespace jero
 		MidiTool::MidiTool()
 		{
 			midiNotes.clear();
-			calculateNoteValues();
+			myBar.numSteps = 4;
+			mySongPosition.bar = 1;
+			mySongPosition.quarter = 1;
+			
+			for (int k = 0; k < myBar.numSteps; k++)
+			{
+				myBar.barSteps[k].duration = 0.2f;
+				myBar.barSteps[k].octave = 1;
+				myBar.barSteps[k].pitch = 36 + k;
+				myBar.barSteps[k].velocity = 100;
+				myBar.barSteps[k].play = true;
+			}
+
+			
 		}
 
 		MidiTool::~MidiTool()
@@ -30,7 +43,7 @@ namespace jero
 		/// <summary>
 		/// set the sample rate for calculation, recalc if needed
 		/// </summary>
-		void MidiTool::setSampleRate(double rate)
+		void MidiTool::prepareToPlay(double rate,int samplesPerBlock)
 		{
 			if (sampleRate != rate)
 			{
@@ -56,13 +69,13 @@ namespace jero
 		/// </summary>
 		void MidiTool::calculateNoteValues()
 		{
-			midiSamples.wholeNote = round((long double(60 * sampleRate / midiBpm * 4)));
-			midiSamples.halfNote = round(midiSamples.wholeNote / 2);
-			midiSamples.quarterNote = round(midiSamples.wholeNote / 4);
-			midiSamples.eighthNote = round(midiSamples.wholeNote / 8);
-			midiSamples.sixteenthNote = round(midiSamples.wholeNote / 16);
-			midiSamples.thirtySecondthNote = round(midiSamples.wholeNote / 32);
-			midiSamples.sixtyFourthNote = round(midiSamples.wholeNote / 64);
+			midiNoteValues.wholeNote = round((long double(60 * sampleRate / midiBpm * 4)));
+			midiNoteValues.halfNote = round(midiNoteValues.wholeNote / 2);
+			midiNoteValues.quarterNote = round(midiNoteValues.wholeNote / 4);
+			midiNoteValues.eighthNote = round(midiNoteValues.wholeNote / 8);
+			midiNoteValues.sixteenthNote = round(midiNoteValues.wholeNote / 16);
+			midiNoteValues.thirtySecondthNote = round(midiNoteValues.wholeNote / 32);
+			midiNoteValues.sixtyFourthNote = round(midiNoteValues.wholeNote / 64);
 		}
 
 		///<summary>
@@ -78,25 +91,6 @@ namespace jero
 
 			if (midiPlayState == (tool::PlayState::Playing))
 			{
-
-				//only if midi in is processed maybe latr for cc events
-
-				/*while (midiIterator.getNextEvent(currentMessage, samplePos))
-				{
-					if ((currentMessage.isNoteOn()))
-					{
-						for (int k = 0; k < rbRepeatCount; k++)
-						{
-							rbNotes.append(new RbNote(currentMessage.getNoteNumber() + noteStep * k,
-								currentMessage.getVelocity() * pow(veloDrop, k),
-								rbSamplesPassed + samplePos + round(rbNoteValues.rbWholeNote / noteDiv * k),
-								rbSamplesPassed + samplePos + round(rbNoteValues.rbWholeNote / noteDiv * k) +
-								(round(rbNoteValues.rbWholeNote / noteDiv * noteDur))));
-						}
-					}
-				}*/
-
-
 				/// <summary>
 				/// keeping track of bar and song position
 				/// </summary>
@@ -107,6 +101,7 @@ namespace jero
 					if (((samplesPassed + i) % midiNoteValues.wholeNote) == 0)
 					{
 						midiTransport.trBar++;
+						mySongPosition.bar = midiTransport.trBar;
 					}
 
 					if (((samplesPassed + i) % midiNoteValues.quarterNote) == 0)
@@ -115,6 +110,7 @@ namespace jero
 						if (midiTransport.trQuarter > 4)
 						{
 							midiTransport.trQuarter = 1;
+							mySongPosition.quarter = midiTransport.trQuarter;
 						}
 					}
 
@@ -154,6 +150,27 @@ namespace jero
 						}
 					}
 
+					auto midiDivision = myBar.numSteps;
+					int midiStepLength = midiNoteValues.wholeNote / midiDivision;
+
+						if (((samplesPassed + i) % (midiStepLength)) == 0)
+						{
+							for (int k = 0; k < myBar.numSteps; k++)
+							{
+								if (myBar.barSteps[k].play)
+								{
+									MidiNote newNote;
+									newNote.noteNumber = myBar.barSteps[k].pitch;
+									newNote.noteVelocity = myBar.barSteps[k].velocity;
+									newNote.startSample = samplesPassed + i;
+									newNote.endSample = samplesPassed + i + ((midiNoteValues.wholeNote / midiDivision)*myBar.barSteps[k].duration);
+									midiNotes.push_back(newNote);
+									DBG(midiNotes.size());
+								}
+							}
+						}
+					
+						
 					
 					/// <summary>
 					/// Adding notes to MidiBuffer if necessary / turning off notes also
@@ -168,7 +185,7 @@ namespace jero
 							myBuffer.addEvent(message, i);
 						}
 
-						if ((samplesPassed + i) == (midiNotes.at(i).endSample))
+						if ((samplesPassed + i) == (midiNotes.at(l).endSample))
 						{
 							auto message = juce::MidiMessage::noteOff(1, midiNotes.at(l).noteNumber, midiNotes.at(l).noteVelocity);
 							myBuffer.addEvent(message, i);
@@ -184,15 +201,6 @@ namespace jero
 					if ((samplesPassed) > (midiNotes.at(m).endSample))
 					{
 						midiNotes.erase(midiNotes.begin()+m);
-
-						///mabye this is safer???
-						/*template <typename T>
-						void remove(std::vector<T>&vec, size_t pos)
-						{
-							std::vector<T>::iterator it = vec.begin();
-							std::advance(it, pos);
-							vec.erase(it);
-						}*/
 					}
 				}
 			}
@@ -228,7 +236,5 @@ namespace jero
 			midiPlayState = tool::PlayState::Stopped;
 			reSet();
 		}
-
-
 	}
 }

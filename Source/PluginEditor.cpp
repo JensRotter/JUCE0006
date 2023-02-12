@@ -16,6 +16,8 @@ JUCE0006AudioProcessorEditor::JUCE0006AudioProcessorEditor (JUCE0006AudioProcess
     // Make sure that before the constructor has finished, you've set the
     // editor's size to whatever you need it to be.
     setSize (400, 300);
+    startTimer(50);
+    addAndMakeVisible(myBarLabel);
 }
 
 JUCE0006AudioProcessorEditor::~JUCE0006AudioProcessorEditor()
@@ -29,12 +31,21 @@ void JUCE0006AudioProcessorEditor::paint (juce::Graphics& g)
     g.fillAll (getLookAndFeel().findColour (juce::ResizableWindow::backgroundColourId));
 
     g.setColour (juce::Colours::white);
-    g.setFont (15.0f);
-    g.drawFittedText ("Hello World!", getLocalBounds(), juce::Justification::centred, 1);
+    
+    
+}
+
+void JUCE0006AudioProcessorEditor::timerCallback()
+{
+    int myBarCt = audioProcessor.myMidiTool.midiTransport.trQuarter;
+    myBarLabel.setText(std::to_string(myBarCt), juce::dontSendNotification);
+    repaint();
+
 }
 
 void JUCE0006AudioProcessorEditor::resized()
 {
     // This is generally where you'll want to lay out the positions of any
     // subcomponents in your editor..
+    myBarLabel.setBounds(10, 10, 200, 100);
 }

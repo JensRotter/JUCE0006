@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <JUCERPROJECT id="ZrwWaQ" name="JUCE0006" projectType="audioplug" useAppConfig="0"
-              addUsingNamespaceToJuceHeader="0" displaySplashScreen="1" jucerFormatVersion="1">
+              addUsingNamespaceToJuceHeader="0" displaySplashScreen="1" jucerFormatVersion="1"
+              pluginFormats="buildVST3" pluginCharacteristicsValue="pluginIsMidiEffectPlugin,pluginProducesMidiOut">
   <MAINGROUP id="qa3H31" name="JUCE0006">
     <GROUP id="{F77190ED-6E75-8E37-51C0-82FC5547215C}" name="Source">
       <FILE id="dDex0I" name="PluginProcessor.cpp" compile="1" resource="0"
