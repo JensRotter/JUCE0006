@@ -9,7 +9,7 @@
 #pragma once
 
 #include <JuceHeader.h>
-#include "jeroheader.h"
+#include "jeroMidi.h"
 
 //==============================================================================
 /**
@@ -56,11 +56,14 @@ public:
     //==============================================================================
     void getStateInformation (juce::MemoryBlock& destData) override;
     void setStateInformation (const void* data, int sizeInBytes) override;
-    jero::midi::MidiTool myMidiTool;
+    jero::MidiTool myMidiTool;
    
 
 private:
     juce::AudioPlayHead* midiPlayhead;
+    int oldPpq = 0;
+    int newPpq;
+
      //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (JUCE0006AudioProcessor)
 };

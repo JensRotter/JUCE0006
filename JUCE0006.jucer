@@ -5,6 +5,8 @@
               pluginFormats="buildVST3" pluginCharacteristicsValue="pluginIsMidiEffectPlugin,pluginProducesMidiOut">
   <MAINGROUP id="qa3H31" name="JUCE0006">
     <GROUP id="{F77190ED-6E75-8E37-51C0-82FC5547215C}" name="Source">
+      <FILE id="KwAl90" name="SqStep.cpp" compile="1" resource="0" file="Source/SqStep.cpp"/>
+      <FILE id="ALdu8e" name="SqStep.h" compile="0" resource="0" file="Source/SqStep.h"/>
       <FILE id="dDex0I" name="PluginProcessor.cpp" compile="1" resource="0"
             file="Source/PluginProcessor.cpp"/>
       <FILE id="XPWLDZ" name="PluginProcessor.h" compile="0" resource="0"
@@ -12,11 +14,8 @@
       <FILE id="CQGHNf" name="PluginEditor.cpp" compile="1" resource="0"
             file="Source/PluginEditor.cpp"/>
       <FILE id="w4RM41" name="PluginEditor.h" compile="0" resource="0" file="Source/PluginEditor.h"/>
-      <FILE id="veN2rI" name="jeroheader.h" compile="0" resource="0" file="Source/jeroheader.h"/>
       <FILE id="BILYe4" name="jeroMidi.cpp" compile="1" resource="0" file="Source/jeroMidi.cpp"/>
       <FILE id="zwvNTo" name="jeroMidi.h" compile="0" resource="0" file="Source/jeroMidi.h"/>
-      <FILE id="IV8WMT" name="jeroTool.cpp" compile="1" resource="0" file="Source/jeroTool.cpp"/>
-      <FILE id="bfboZs" name="jeroTool.h" compile="0" resource="0" file="Source/jeroTool.h"/>
     </GROUP>
   </MAINGROUP>
   <JUCEOPTIONS JUCE_STRICT_REFCOUNTEDPOINTER="1" JUCE_VST3_CAN_REPLACE_VST2="0"/>
